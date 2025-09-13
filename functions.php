@@ -17,7 +17,7 @@ if ( ! function_exists( 'woodmart_add_video_to_product_loop' ) ) {
 			if ( is_array( $first_video ) && ! empty( $first_video['upload_video_url'] ) ) {
 				$image = sprintf(
 					'<div class="wd-product-video-wrapper">
-							<video class="loop-product-video" autoplay muted loop playsinline>
+							<video autoplay muted loop playsinline>
 							<source src="%s" type="video/mp4">
 							</video>
 						</div>',
@@ -32,19 +32,29 @@ if ( ! function_exists( 'woodmart_add_video_to_product_loop' ) ) {
 	add_filter( 'woodmart_get_product_thumbnail', 'woodmart_add_video_to_product_loop', 10, 5 );
 }
 
-if ( ! function_exists( 'woodmart_add_video_class_to_product_loop' ) ) {
-	function woodmart_add_video_class_to_product_loop( $classes, $product ) {
-		$product_id = $product->get_id();
-		if ( 'product' === get_post_type( $product_id ) ) {
-			$video_url = get_post_meta( $product_id, 'woodmart_wc_video_gallery', true );
+if ( ! function_exists( 'woodmart_hover_image' ) ) {
+	function woodmart_hover_image() {
+		global $product;
 
-			if ( $video_url ) {
-				$classes[] = 'wd-product-has-video';
+		$attachment_ids = $product->get_gallery_image_ids();
+
+		$hover_image = '';
+
+		if ( ! empty( $attachment_ids[0] ) ) {
+			$hover_image = woodmart_get_product_thumbnail( 'woocommerce_thumbnail', $attachment_ids[0] );
+
+			$attachment_url = wp_get_attachment_url( $attachment_ids[0] );
+			if ( $attachment_url && 'mp4' === strtolower( pathinfo( $attachment_url, PATHINFO_EXTENSION ) ) ) {
+				return;
 			}
 		}
 
-		return $classes;
+		if ( $hover_image != '' && woodmart_get_opt( 'hover_image' ) ) :
+			?>
+			<div class="hover-img">
+				<?php echo woodmart_get_product_thumbnail( 'woocommerce_thumbnail', $attachment_ids[0] ); ?>
+			</div>
+			<?php
+		endif;
 	}
-
-	add_filter( 'woocommerce_post_class', 'woodmart_add_video_class_to_product_loop', 10, 2 );
 }
