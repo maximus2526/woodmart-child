@@ -7,3 +7,18 @@
  Version:      1.0.0
  Text Domain:  woodmart
 */
+
+.wd-product-video-wrapper {
+	position: absolute;
+	inset: 0;
+}
+
+.wd-product-video-wrapper video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.wd-product.wd-product-has-video .hover-img {
+	display: none;
+}
